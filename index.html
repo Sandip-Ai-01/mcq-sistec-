@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SISTec MST Examination</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ 1. LOGIN + INSTRUCTIONS ============ -->
+<section id="loginScreen" class="screen login">
+  <div class="login-brand">
+    <div class="logo" aria-hidden="true">SIS</div>
+    <h2>SISTec – Sagar Institute of Science and Technology</h2>
+    <h3>Examination Instructions</h3>
+    <ol class="rules">
+      <li><b>Part A:</b> 50 MCQs (advanced), 1 mark each = <b>50 marks</b>, auto-graded.</li>
+      <li><b>Part B:</b> 5 theory questions, 10 marks each = <b>50 marks</b>, evaluated by faculty.</li>
+      <li>Total: <b>55 questions · 100 marks</b>. Duration: <b>90 minutes</b>.</li>
+      <li>No negative marking. Only <b>one option</b> per MCQ.</li>
+      <li>For each theory answer, click <b>Submit Answer</b> to save it.</li>
+      <li>Your <b>camera must stay on</b> for the whole exam. Video is shown only on your screen; nothing is uploaded.</li>
+      <li>Two small snapshots (start and end) are included in your PDF report.</li>
+      <li>The exam is <b>submitted automatically</b> when the timer ends.</li>
+      <li>After submission you can download your <b>PDF report</b>.</li>
+    </ol>
+  </div>
+
+  <div class="login-form-wrap">
+    <form id="loginForm" class="login-card" novalidate>
+      <h1>SISTec MST Examination</h1>
+      <p class="sub">Mid Semester Test · OOP Concepts &amp; C++ Fundamentals (Advanced)</p>
+
+      <label for="stName">Student name</label>
+      <input id="stName" type="text" autocomplete="name" maxlength="60" placeholder="e.g. Aarav Sharma">
+      <small class="err" id="errName"></small>
+
+      <label for="stRoll">Enrollment / Roll number</label>
+      <input id="stRoll" type="text" maxlength="25" placeholder="e.g. 0827CS231001">
+      <small class="err" id="errRoll"></small>
+
+      <div class="two">
+        <div>
+          <label for="stBranch">Branch</label>
+          <select id="stBranch">
+            <option value="">Select branch</option>
+            <option>CSE</option><option>CSE (AI &amp; ML)</option><option>CSE (Data Science)</option>
+            <option>Information Technology</option><option>Electronics &amp; Communication</option>
+            <option>Electrical Engineering</option><option>Mechanical Engineering</option><option>Civil Engineering</option>
+          </select>
+          <small class="err" id="errBranch"></small>
+        </div>
+        <div>
+          <label for="stSem">Semester</label>
+          <select id="stSem">
+            <option value="">Select semester</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+            <option>5</option><option>6</option><option>7</option><option>8</option>
+          </select>
+          <small class="err" id="errSem"></small>
+        </div>
+      </div>
+
+      <p class="camnote">📷 Camera access is required. You will be asked for permission when you start.</p>
+      <label class="check"><input id="stAgree" type="checkbox"> I have read and understood the instructions.</label>
+      <small class="err" id="errAgree"></small>
+      <small class="err" id="errCam"></small>
+
+      <button type="submit" class="btn primary block">Start Examination</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ 2. EXAM ============ -->
+<section id="examScreen" class="screen exam" hidden>
+  <header class="topbar">
+    <div class="tb-left">
+      <div class="logo sm" aria-hidden="true">SIS</div>
+      <div><strong>SISTec MST Examination</strong><span class="muted" id="tbSubject">OOP &amp; C++ Fundamentals</span></div>
+    </div>
+    <div class="tb-student" id="tbStudent"></div>
+    <div class="timer" id="timerBox" role="timer" aria-label="Time remaining">
+      <span class="t-label">Time left</span><span id="timer">01:30:00</span>
+    </div>
+    <button class="btn ghost-light only-mobile" id="paletteToggle" aria-controls="palette" aria-expanded="false">Palette</button>
+    <button class="btn danger" id="submitBtn">Submit Exam</button>
+  </header>
+
+  <div class="exam-grid">
+    <main class="qpane">
+      <div class="qmeta">
+        <span class="qnum" id="qNum">Question 1 of 100</span>
+        <span class="chip" id="qUnit"></span><span class="chip th-chip" id="qMarks" hidden>10 marks</span>
+        <span class="saved" id="savedMsg" aria-live="polite">✓ Answer saved</span>
+      </div>
+
+      <article class="qcard" id="qCard">
+        <svg class="ribbon" id="ribbon" viewBox="0 0 24 32" aria-hidden="true"><path d="M3 1h18v30l-9-7-9 7z"/></svg>
+        <p class="qtext" id="qText"></p>
+        <div class="options" id="options" role="radiogroup" aria-label="Answer options"></div>
+        <div class="theory" id="theoryBox" hidden>
+          <label for="thText" class="sr">Your answer</label>
+          <textarea id="thText" rows="12" placeholder="Type your answer here…" spellcheck="false"></textarea>
+          <div class="th-foot"><span class="muted" id="thCount">0 words</span><span class="th-status" id="thStatus"></span>
+            <button class="btn primary" id="thSubmit">Submit Answer</button></div>
+        </div>
+      </article>
+
+      <div class="actions">
+        <div class="grp">
+          <button class="btn outline" id="markBtn" aria-pressed="false">
+            <svg class="bm" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>
+            <span id="markTxt">Mark for Review</span>
+          </button>
+          <button class="btn outline" id="clearBtn">Clear Response</button>
+        </div>
+        <div class="grp">
+          <button class="btn outline" id="prevBtn">← Previous</button>
+          <button class="btn primary" id="nextBtn">Next →</button>
+        </div>
+      </div>
+      <p class="hint muted">Shortcuts (MCQ): ← → navigate · A–D or 1–4 select · M mark for review</p>
+    </main>
+
+    <aside class="palette" id="palette" aria-label="Question palette">
+      <h2>Question Palette</h2>
+      <p class="muted pnote">1–50 MCQ · T1–T5 theory</p>
+      <ul class="legend">
+        <li><i class="sw nv"></i>Not Visited <b id="cNV">0</b></li>
+        <li><i class="sw na"></i>Not Answered <b id="cNA">0</b></li>
+        <li><i class="sw an"></i>Answered <b id="cAN">0</b></li>
+        <li><i class="sw mk"></i>Marked <b id="cMK">0</b></li>
+        <li class="wide"><i class="sw am"></i>Answered &amp; Marked for Review <b id="cAM">0</b></li>
+      </ul>
+      <div class="grid" id="paletteGrid"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ 3. RESULT ============ -->
+<section id="resultScreen" class="screen result" hidden>
+  <header class="topbar"><div class="tb-left"><div class="logo sm" aria-hidden="true">SIS</div>
+    <div><strong>SISTec MST Examination</strong><span class="muted">Result</span></div></div></header>
+  <div class="res-wrap">
+    <div class="res-hero">
+      <div class="ring-box">
+        <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
+          <circle class="ring-bg" cx="60" cy="60" r="54"/>
+          <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="54"/>
+        </svg>
+        <div class="ring-txt"><b id="scoreNum">0</b><span>Part A · out of 50</span></div>
+      </div>
+      <div class="res-info">
+        <h1 id="rName"></h1>
+        <p id="rMeta" class="muted"></p>
+        <p class="exam-name">SISTec MST Examination · OOP &amp; C++ Fundamentals</p>
+        <p class="muted" id="rPartB"></p>
+        <div class="grade-row noprint-after"><span class="grade" id="rGrade">–</span><span id="rPct" class="pct">0%</span><span id="rStatus" class="status-pill"></span><button class="btn primary noprint" id="pdfBtn">⬇ Download PDF Report</button></div>
+      </div>
+    </div>
+
+    <div class="snaps" id="snaps"></div>
+    <div class="stats" id="stats"></div>
+
+    <div class="review-head">
+      <h2>Answer Review</h2>
+      <div class="filters" id="filters" role="tablist">
+        <button class="f active" data-f="all">All</button>
+        <button class="f" data-f="correct">Correct</button>
+        <button class="f" data-f="wrong">Incorrect</button>
+        <button class="f" data-f="none">Unanswered</button>
+      </div>
+    </div>
+    <div id="review"></div>
+
+    <div class="res-actions"><button class="btn primary" id="pdfBtn2">Download PDF Report</button> <button class="btn outline" id="restartBtn">Restart Exam</button></div>
+  </div>
+</section>
+
+<!-- ============ MODALS ============ -->
+<div class="overlay" id="submitModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="smTitle">
+    <h3 id="smTitle">Submit examination</h3>
+    <div class="m-stats four">
+      <div><b id="mAns">0</b>MCQs answered</div>
+      <div><b id="mUn">0</b>MCQs unanswered</div>
+      <div><b id="mTh">0/5</b>Theory submitted</div>
+      <div><b id="mMk">0</b>Marked for review</div>
+    </div>
+    <p>Are you sure you want to submit your examination?</p>
+    <div class="m-actions">
+      <button class="btn outline" id="contBtn">Continue Exam</button>
+      <button class="btn danger" id="confirmSubmit">Confirm Submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="restartModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rmTitle">
+    <h3 id="rmTitle">Restart examination?</h3>
+    <p>Your current result will be erased and you will return to the login screen.</p>
+    <div class="m-actions">
+      <button class="btn outline" id="restartNo">Cancel</button>
+      <button class="btn danger" id="restartYes">Yes, Restart</button>
+    </div>
+  </div>
+</div>
+
+<div class="cam" id="camBox" hidden><video id="camVideo" autoplay muted playsinline></video><span class="rec">● Camera on</span></div>
+<canvas id="snapCanvas" width="160" height="120" hidden></canvas>
+<div class="overlay" id="camModal" hidden>
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="cmTitle">
+    <h3 id="cmTitle">Camera required</h3>
+    <p>The camera is off or blocked. Allow camera access to continue the examination. Your timer is still running.</p>
+    <small class="err" id="camErr"></small>
+    <div class="m-actions"><button class="btn primary" id="camRetry">Enable Camera</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="alert" hidden></div>
+
+<script src="questions.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
